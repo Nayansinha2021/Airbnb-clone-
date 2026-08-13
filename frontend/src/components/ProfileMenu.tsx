@@ -29,7 +29,7 @@ export default function ProfileMenu({ onClose }: ProfileMenuProps) {
   return (
     <div 
       ref={menuRef} 
-      className="absolute top-16 right-6 w-80 bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden z-[100] py-3 text-sm text-gray-800 animate-in fade-in slide-in-from-top-2 duration-200"
+      className="absolute top-14 right-0 w-[300px] sm:w-80 max-w-[calc(100vw-1.5rem)] bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden z-[100] py-3 text-sm text-gray-800 animate-in fade-in slide-in-from-top-2 duration-200"
     >
       {/* Current User Role Info Header */}
       {user && (
