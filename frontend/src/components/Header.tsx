@@ -4,6 +4,7 @@ import {
   Castle, Palmtree, Home, Mountain, Compass
 } from "lucide-react";
 import SearchBar from "./SearchBar";
+import ProfileMenu from "./ProfileMenu";
 import Link from "next/link";
 
 export const CATEGORIES = [
@@ -37,6 +38,7 @@ export default function Header({
 }) {
   const [isCollapsed, setIsCollapsed] = useState(startCollapsed);
   const [isForceExpanded, setIsForceExpanded] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
 
   useEffect(() => {
     if (startCollapsed) {
@@ -134,22 +136,26 @@ export default function Header({
           </div>
 
           {/* Right: User Menu */}
-          <div className="flex items-center gap-4 flex-shrink-0">
+          <div className="flex items-center gap-4 flex-shrink-0 relative">
             <Link href="/hosting" className="hidden sm:block text-[14px] font-bold text-gray-800 hover:bg-gray-100 py-2 px-4 rounded-full transition-colors cursor-pointer select-none">
               Become a host
             </Link>
             
-            <div className="flex items-center gap-3">
-              {/* Avatar Circle with letter "N" */}
-              <div className="w-9.5 h-9.5 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center font-bold text-sm shadow-inner cursor-pointer hover:bg-rose-200 transition-colors select-none">
-                N
-              </div>
-              
-              {/* Hamburger Circle */}
-              <button className="w-9.5 h-9.5 rounded-full bg-gray-50 hover:bg-gray-100 text-gray-700 flex items-center justify-center transition-colors cursor-pointer border border-gray-200 shadow-sm">
+            <div 
+              onClick={() => setShowProfileMenu(!showProfileMenu)}
+              className="flex items-center gap-2.5 p-1.5 pl-3 border border-gray-200 hover:shadow-md rounded-full transition-all cursor-pointer bg-white"
+            >
+              <button className="text-gray-700">
                 <Menu size={18} strokeWidth={2.5} />
               </button>
+              <div className="w-8 h-8 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center font-bold text-sm shadow-inner select-none">
+                N
+              </div>
             </div>
+
+            {showProfileMenu && (
+              <ProfileMenu onClose={() => setShowProfileMenu(false)} />
+            )}
           </div>
 
         </div>
