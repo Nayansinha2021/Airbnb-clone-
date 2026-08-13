@@ -26,11 +26,6 @@ export default function ProfileMenu({ onClose }: ProfileMenuProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [onClose]);
 
-  const handleActionToast = (msg: string) => {
-    alert(msg);
-    onClose();
-  };
-
   return (
     <div 
       ref={menuRef} 
@@ -46,7 +41,7 @@ export default function ProfileMenu({ onClose }: ProfileMenuProps) {
         </div>
       )}
 
-      {/* Section 1: Main Links */}
+      {/* Section 1: Main Navigation Links */}
       <div className="py-1">
         <Link 
           href="/wishlists" 
@@ -66,37 +61,40 @@ export default function ProfileMenu({ onClose }: ProfileMenuProps) {
           <span>Trips</span>
         </Link>
 
-        <button 
-          onClick={() => handleActionToast("Messages: No unread messages.")}
-          className="flex items-center gap-3 w-full text-left px-5 py-3 hover:bg-gray-50 font-medium transition-colors cursor-pointer"
+        <Link 
+          href="/messages" 
+          onClick={onClose}
+          className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 font-medium transition-colors cursor-pointer"
         >
           <MessageSquare size={18} className="text-gray-700" />
           <span>Messages</span>
-        </button>
+        </Link>
 
-        <button 
-          onClick={() => handleActionToast(`User Profile: ${user ? user.name : 'Guest User'}`)}
-          className="flex items-center gap-3 w-full text-left px-5 py-3 hover:bg-gray-50 font-medium transition-colors cursor-pointer"
+        <Link 
+          href="/profile" 
+          onClick={onClose}
+          className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 font-medium transition-colors cursor-pointer"
         >
           <User size={18} className="text-gray-700" />
           <span>Profile</span>
-        </button>
+        </Link>
       </div>
 
       <hr className="my-1 border-gray-100" />
 
       {/* Section 2: Account & Support */}
       <div className="py-1">
-        <button 
-          onClick={() => handleActionToast("Notifications: You're all caught up!")}
-          className="flex items-center gap-3 w-full text-left px-5 py-3 hover:bg-gray-50 font-normal transition-colors cursor-pointer text-gray-700"
+        <Link 
+          href="/notifications" 
+          onClick={onClose}
+          className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 font-normal transition-colors cursor-pointer text-gray-700"
         >
           <Bell size={18} className="text-gray-700" />
           <span>Notifications</span>
-        </button>
+        </Link>
 
         <Link 
-          href="/hosting" 
+          href="/account" 
           onClick={onClose}
           className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 font-normal transition-colors cursor-pointer text-gray-700"
         >
@@ -105,20 +103,21 @@ export default function ProfileMenu({ onClose }: ProfileMenuProps) {
         </Link>
 
         <button 
-          onClick={() => handleActionToast("Language & Currency: English (IN) · INR (₹)")}
+          onClick={() => { alert("Language & Currency: English (IN) · INR (₹)"); onClose(); }}
           className="flex items-center gap-3 w-full text-left px-5 py-3 hover:bg-gray-50 font-normal transition-colors cursor-pointer text-gray-700"
         >
           <Globe size={18} className="text-gray-700" />
           <span>Languages & currency</span>
         </button>
 
-        <button 
-          onClick={() => handleActionToast("Help Centre: Contact Airbnb support or view FAQs.")}
-          className="flex items-center gap-3 w-full text-left px-5 py-3 hover:bg-gray-50 font-normal transition-colors cursor-pointer text-gray-700"
+        <Link 
+          href="/help" 
+          onClick={onClose}
+          className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 font-normal transition-colors cursor-pointer text-gray-700"
         >
           <HelpCircle size={18} className="text-gray-700" />
           <span>Help Centre</span>
-        </button>
+        </Link>
       </div>
 
       <hr className="my-1 border-gray-100" />
@@ -141,21 +140,23 @@ export default function ProfileMenu({ onClose }: ProfileMenuProps) {
           </div>
         </Link>
 
-        <button 
-          onClick={() => handleActionToast("Referral link copied to clipboard!")}
-          className="flex items-center gap-3 w-full text-left px-3 py-2.5 hover:bg-gray-50 rounded-lg font-normal transition-colors cursor-pointer text-gray-700 mt-1"
+        <Link 
+          href="/refer" 
+          onClick={onClose}
+          className="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 rounded-lg font-normal transition-colors cursor-pointer text-gray-700 mt-1"
         >
           <UserPlus size={16} className="text-gray-600" />
           <span>Refer a host</span>
-        </button>
+        </Link>
 
-        <button 
-          onClick={() => handleActionToast("Find a co-host feature: Browse local co-hosts in your area.")}
-          className="flex items-center gap-3 w-full text-left px-3 py-2.5 hover:bg-gray-50 rounded-lg font-normal transition-colors cursor-pointer text-gray-700"
+        <Link 
+          href="/co-host" 
+          onClick={onClose}
+          className="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 rounded-lg font-normal transition-colors cursor-pointer text-gray-700"
         >
           <Users size={16} className="text-gray-600" />
           <span>Find a co-host</span>
-        </button>
+        </Link>
       </div>
 
       <hr className="my-1 border-gray-100" />
