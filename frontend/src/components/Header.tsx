@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { 
   Menu, Search, SlidersHorizontal, Waves, Umbrella, Tent, 
-  Castle, Palmtree, Home, Mountain, Compass
+  Castle, Palmtree, Home, Mountain, Compass, User
 } from "lucide-react";
 import SearchBar from "./SearchBar";
 import ProfileMenu from "./ProfileMenu";
 import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
 
 export const CATEGORIES = [
   { name: "All", icon: Compass },
@@ -36,6 +37,7 @@ export default function Header({
   startCollapsed?: boolean;
   onSearch?: (params: { location: string; guests: number }) => void;
 }) {
+  const { user } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(startCollapsed);
   const [isForceExpanded, setIsForceExpanded] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -150,14 +152,24 @@ export default function Header({
               Become a host
             </Link>
             
-            {/* Avatar Circle button ("N") */}
-            <button 
-              onClick={() => setShowProfileMenu(!showProfileMenu)}
-              className="w-10 h-10 rounded-full bg-[#FFEAEF] hover:bg-[#FFDCE4] text-[#C1121F] flex items-center justify-center font-bold text-base transition-colors cursor-pointer select-none shadow-sm"
-              title="User Profile"
-            >
-              N
-            </button>
+            {/* Avatar Circle button (Person icon when logged out, Letter initial when logged in) */}
+            {user ? (
+              <button 
+                onClick={() => setShowProfileMenu(!showProfileMenu)}
+                className="w-10 h-10 rounded-full bg-[#FFEAEF] hover:bg-[#FFDCE4] text-[#C1121F] flex items-center justify-center font-bold text-base transition-colors cursor-pointer select-none shadow-sm"
+                title={`Profile: ${user.name}`}
+              >
+                {user.name ? user.name.charAt(0).toUpperCase() : 'N'}
+              </button>
+            ) : (
+              <button 
+                onClick={() => setShowProfileMenu(!showProfileMenu)}
+                className="w-10 h-10 rounded-full bg-[#F3F4F6] hover:bg-gray-200 text-gray-700 flex items-center justify-center transition-colors cursor-pointer select-none shadow-sm"
+                title="Account Menu"
+              >
+                <User size={18} strokeWidth={2.2} />
+              </button>
+            )}
 
             {/* Hamburger Circle button ("≡") */}
             <button 
