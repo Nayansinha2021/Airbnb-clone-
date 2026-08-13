@@ -136,22 +136,28 @@ export default function Header({
           </div>
 
           {/* Right: User Menu */}
-          <div className="flex items-center gap-4 flex-shrink-0 relative">
-            <Link href="/hosting" className="hidden sm:block text-[14px] font-bold text-gray-800 hover:bg-gray-100 py-2 px-4 rounded-full transition-colors cursor-pointer select-none">
+          <div className="flex items-center gap-3 flex-shrink-0 relative">
+            <Link href="/hosting" className="hidden sm:block text-[15px] font-semibold text-gray-900 hover:bg-gray-100 py-2.5 px-4 rounded-full transition-colors cursor-pointer select-none">
               Become a host
             </Link>
             
-            <div 
+            {/* Avatar Circle button ("N") */}
+            <button 
               onClick={() => setShowProfileMenu(!showProfileMenu)}
-              className="flex items-center gap-2.5 p-1.5 pl-3 border border-gray-200 hover:shadow-md rounded-full transition-all cursor-pointer bg-white"
+              className="w-10 h-10 rounded-full bg-[#FFEAEF] hover:bg-[#FFDCE4] text-[#C1121F] flex items-center justify-center font-bold text-base transition-colors cursor-pointer select-none shadow-sm"
+              title="User Profile"
             >
-              <button className="text-gray-700">
-                <Menu size={18} strokeWidth={2.5} />
-              </button>
-              <div className="w-8 h-8 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center font-bold text-sm shadow-inner select-none">
-                N
-              </div>
-            </div>
+              N
+            </button>
+
+            {/* Hamburger Circle button ("≡") */}
+            <button 
+              onClick={() => setShowProfileMenu(!showProfileMenu)}
+              className="w-10 h-10 rounded-full bg-[#F3F4F6] hover:bg-gray-200 text-gray-900 flex items-center justify-center transition-colors cursor-pointer select-none shadow-sm"
+              title="Main Menu"
+            >
+              <Menu size={18} strokeWidth={2.5} />
+            </button>
 
             {showProfileMenu && (
               <ProfileMenu onClose={() => setShowProfileMenu(false)} />
