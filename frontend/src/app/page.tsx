@@ -177,26 +177,6 @@ export default function HomePage() {
         )}
       </main>
 
-      {/* Floating Map Toggle Button */}
-      <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-40">
-        <button 
-          onClick={() => setShowMap(!showMap)}
-          className="bg-gray-900 hover:bg-black text-white px-6 py-3.5 rounded-full shadow-lg flex items-center gap-2 font-semibold transition-transform hover:scale-105"
-        >
-          {showMap ? (
-            <>
-              <span>Show list</span>
-              <List size={18} />
-            </>
-          ) : (
-            <>
-              <span>Show map</span>
-              <MapIcon size={18} />
-            </>
-          )}
-        </button>
-      </div>
-
       <Footer />
     </div>
   );
