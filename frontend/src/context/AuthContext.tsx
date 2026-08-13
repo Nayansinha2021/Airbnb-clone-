@@ -2,9 +2,9 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 
-type UserRole = "GUEST" | "HOST";
+export type UserRole = "GUEST" | "HOST";
 
-interface User {
+export interface User {
   id: number;
   name: string;
   email: string;
@@ -15,6 +15,7 @@ interface AuthContextType {
   user: User | null;
   loginAsGuest: () => void;
   loginAsHost: () => void;
+  loginCustom: (name: string, email: string, role: UserRole) => void;
   logout: () => void;
 }
 
@@ -23,7 +24,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
-  // In a real app, this would check a token from localStorage/cookies and fetch user details
   useEffect(() => {
     const savedUser = localStorage.getItem("airbnb_clone_user");
     if (savedUser) {
@@ -47,13 +47,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.setItem("airbnb_clone_user", JSON.stringify(hostUser));
   };
 
+  const loginCustom = (name: string, email: string, role: UserRole) => {
+    const customUser: User = {
+      id: Date.now(),
+      name: name || "Nayan Sinha",
+      email: email || "nayan@example.com",
+      role: role || "GUEST"
+    };
+    setUser(customUser);
+    localStorage.setItem("airbnb_clone_user", JSON.stringify(customUser));
+  };
+
   const logout = () => {
     setUser(null);
     localStorage.removeItem("airbnb_clone_user");
   };
 
   return (
-    <AuthContext.Provider value={{ user, loginAsGuest, loginAsHost, logout }}>
+    <AuthContext.Provider value={{ user, loginAsGuest, loginAsHost, loginCustom, logout }}>
       {children}
     </AuthContext.Provider>
   );

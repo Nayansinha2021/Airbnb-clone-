@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
+import AuthModal from "./AuthModal";
 import { 
   Heart, Home, MessageSquare, User, Bell, Settings, 
-  Globe, HelpCircle, Users, UserPlus, LogOut, ArrowRightLeft
+  Globe, HelpCircle, Users, UserPlus, LogOut, ArrowRightLeft, LogIn
 } from "lucide-react";
 
 interface ProfileMenuProps {
@@ -15,190 +16,206 @@ interface ProfileMenuProps {
 export default function ProfileMenu({ onClose }: ProfileMenuProps) {
   const { user, loginAsGuest, loginAsHost, logout } = useAuth();
   const menuRef = useRef<HTMLDivElement>(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        onClose();
+        // If AuthModal is open, don't close ProfileMenu immediately
+        if (!showAuthModal) {
+          onClose();
+        }
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [onClose]);
+  }, [onClose, showAuthModal]);
 
   return (
-    <div 
-      ref={menuRef} 
-      className="absolute top-14 right-0 w-[300px] sm:w-80 max-w-[calc(100vw-1.5rem)] max-h-[calc(100vh-5rem)] overflow-y-auto bg-white rounded-2xl shadow-2xl border border-gray-200 z-[100] py-3 text-sm text-gray-800 animate-in fade-in slide-in-from-top-2 duration-200"
-    >
-      {/* Current User Role Info Header */}
-      {user && (
-        <div className="px-5 py-2.5 bg-gray-50 border-b border-gray-100 flex justify-between items-center text-xs">
-          <span className="text-gray-500 font-medium">Logged in as</span>
-          <span className="font-bold text-gray-900 bg-white px-2 py-0.5 rounded border border-gray-200">
-            {user.name} ({user.role})
-          </span>
-        </div>
-      )}
-
-      {/* Section 1: Main Navigation Links */}
-      <div className="py-1">
-        <Link 
-          href="/wishlists" 
-          onClick={onClose}
-          className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 font-medium transition-colors cursor-pointer"
-        >
-          <Heart size={18} className="text-gray-700" />
-          <span>Wishlists</span>
-        </Link>
-        
-        <Link 
-          href="/trips" 
-          onClick={onClose}
-          className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 font-medium transition-colors cursor-pointer"
-        >
-          <Home size={18} className="text-gray-700" />
-          <span>Trips</span>
-        </Link>
-
-        <Link 
-          href="/messages" 
-          onClick={onClose}
-          className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 font-medium transition-colors cursor-pointer"
-        >
-          <MessageSquare size={18} className="text-gray-700" />
-          <span>Messages</span>
-        </Link>
-
-        <Link 
-          href="/profile" 
-          onClick={onClose}
-          className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 font-medium transition-colors cursor-pointer"
-        >
-          <User size={18} className="text-gray-700" />
-          <span>Profile</span>
-        </Link>
-      </div>
-
-      <hr className="my-1 border-gray-100" />
-
-      {/* Section 2: Account & Support */}
-      <div className="py-1">
-        <Link 
-          href="/notifications" 
-          onClick={onClose}
-          className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 font-normal transition-colors cursor-pointer text-gray-700"
-        >
-          <Bell size={18} className="text-gray-700" />
-          <span>Notifications</span>
-        </Link>
-
-        <Link 
-          href="/account" 
-          onClick={onClose}
-          className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 font-normal transition-colors cursor-pointer text-gray-700"
-        >
-          <Settings size={18} className="text-gray-700" />
-          <span>Account settings</span>
-        </Link>
-
-        <button 
-          onClick={() => { alert("Language & Currency: English (IN) · INR (₹)"); onClose(); }}
-          className="flex items-center gap-3 w-full text-left px-5 py-3 hover:bg-gray-50 font-normal transition-colors cursor-pointer text-gray-700"
-        >
-          <Globe size={18} className="text-gray-700" />
-          <span>Languages & currency</span>
-        </button>
-
-        <Link 
-          href="/help" 
-          onClick={onClose}
-          className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 font-normal transition-colors cursor-pointer text-gray-700"
-        >
-          <HelpCircle size={18} className="text-gray-700" />
-          <span>Help Centre</span>
-        </Link>
-      </div>
-
-      <hr className="my-1 border-gray-100" />
-
-      {/* Section 3: Become a Host Card */}
-      <div className="p-2">
-        <Link 
-          href="/hosting" 
-          onClick={onClose}
-          className="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors cursor-pointer group border border-gray-100"
-        >
-          <div>
-            <span className="font-semibold block text-gray-900">Become a host</span>
-            <span className="text-xs text-gray-500 block max-w-[170px] leading-tight mt-0.5">
-              It's easy to start hosting and earn extra income.
+    <>
+      <div 
+        ref={menuRef} 
+        className="absolute top-14 right-0 w-[300px] sm:w-80 max-w-[calc(100vw-1.5rem)] max-h-[calc(100vh-5rem)] overflow-y-auto bg-white rounded-2xl shadow-2xl border border-gray-200 z-[100] py-3 text-sm text-gray-800 animate-in fade-in slide-in-from-top-2 duration-200"
+      >
+        {/* Current User Role Info Header */}
+        {user && (
+          <div className="px-5 py-2.5 bg-gray-50 border-b border-gray-100 flex justify-between items-center text-xs">
+            <span className="text-gray-500 font-medium">Logged in as</span>
+            <span className="font-bold text-gray-900 bg-white px-2 py-0.5 rounded border border-gray-200">
+              {user.name} ({user.role})
             </span>
           </div>
-          <div className="w-10 h-10 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0 group-hover:scale-105 transition-transform">
-            🏠
-          </div>
-        </Link>
-
-        <Link 
-          href="/refer" 
-          onClick={onClose}
-          className="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 rounded-lg font-normal transition-colors cursor-pointer text-gray-700 mt-1"
-        >
-          <UserPlus size={16} className="text-gray-600" />
-          <span>Refer a host</span>
-        </Link>
-
-        <Link 
-          href="/co-host" 
-          onClick={onClose}
-          className="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 rounded-lg font-normal transition-colors cursor-pointer text-gray-700"
-        >
-          <Users size={16} className="text-gray-600" />
-          <span>Find a co-host</span>
-        </Link>
-      </div>
-
-      <hr className="my-1 border-gray-100" />
-
-      {/* Section 4: Role Switch & Auth */}
-      <div className="py-1">
-        {user?.role === "HOST" ? (
-          <button 
-            onClick={() => { loginAsGuest(); onClose(); }}
-            className="flex items-center gap-3 w-full text-left px-5 py-3 hover:bg-gray-50 font-semibold text-rose-600 transition-colors cursor-pointer"
-          >
-            <ArrowRightLeft size={16} />
-            <span>Switch to Guest account</span>
-          </button>
-        ) : (
-          <button 
-            onClick={() => { loginAsHost(); onClose(); }}
-            className="flex items-center gap-3 w-full text-left px-5 py-3 hover:bg-gray-50 font-semibold text-rose-600 transition-colors cursor-pointer"
-          >
-            <ArrowRightLeft size={16} />
-            <span>Switch to Host account</span>
-          </button>
         )}
 
-        {user ? (
-          <button 
-            onClick={() => { logout(); onClose(); }}
-            className="flex items-center gap-3 w-full text-left px-5 py-3 hover:bg-gray-50 font-medium text-gray-700 transition-colors cursor-pointer"
+        {/* Section 1: Main Navigation Links */}
+        <div className="py-1">
+          <Link 
+            href="/wishlists" 
+            onClick={onClose}
+            className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 font-medium transition-colors cursor-pointer"
           >
-            <LogOut size={16} />
-            <span>Log out</span>
-          </button>
-        ) : (
-          <button 
-            onClick={() => { loginAsGuest(); onClose(); }}
-            className="flex items-center gap-3 w-full text-left px-5 py-3 hover:bg-gray-50 font-semibold text-gray-900 transition-colors cursor-pointer"
+            <Heart size={18} className="text-gray-700" />
+            <span>Wishlists</span>
+          </Link>
+          
+          <Link 
+            href="/trips" 
+            onClick={onClose}
+            className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 font-medium transition-colors cursor-pointer"
           >
-            <span>Log in / Sign up</span>
+            <Home size={18} className="text-gray-700" />
+            <span>Trips</span>
+          </Link>
+
+          <Link 
+            href="/messages" 
+            onClick={onClose}
+            className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 font-medium transition-colors cursor-pointer"
+          >
+            <MessageSquare size={18} className="text-gray-700" />
+            <span>Messages</span>
+          </Link>
+
+          <Link 
+            href="/profile" 
+            onClick={onClose}
+            className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 font-medium transition-colors cursor-pointer"
+          >
+            <User size={18} className="text-gray-700" />
+            <span>Profile</span>
+          </Link>
+        </div>
+
+        <hr className="my-1 border-gray-100" />
+
+        {/* Section 2: Account & Support */}
+        <div className="py-1">
+          <Link 
+            href="/notifications" 
+            onClick={onClose}
+            className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 font-normal transition-colors cursor-pointer text-gray-700"
+          >
+            <Bell size={18} className="text-gray-700" />
+            <span>Notifications</span>
+          </Link>
+
+          <Link 
+            href="/account" 
+            onClick={onClose}
+            className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 font-normal transition-colors cursor-pointer text-gray-700"
+          >
+            <Settings size={18} className="text-gray-700" />
+            <span>Account settings</span>
+          </Link>
+
+          <button 
+            onClick={() => { alert("Language & Currency: English (IN) · INR (₹)"); onClose(); }}
+            className="flex items-center gap-3 w-full text-left px-5 py-3 hover:bg-gray-50 font-normal transition-colors cursor-pointer text-gray-700"
+          >
+            <Globe size={18} className="text-gray-700" />
+            <span>Languages & currency</span>
           </button>
-        )}
+
+          <Link 
+            href="/help" 
+            onClick={onClose}
+            className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 font-normal transition-colors cursor-pointer text-gray-700"
+          >
+            <HelpCircle size={18} className="text-gray-700" />
+            <span>Help Centre</span>
+          </Link>
+        </div>
+
+        <hr className="my-1 border-gray-100" />
+
+        {/* Section 3: Become a Host Card */}
+        <div className="p-2">
+          <Link 
+            href="/hosting" 
+            onClick={onClose}
+            className="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors cursor-pointer group border border-gray-100"
+          >
+            <div>
+              <span className="font-semibold block text-gray-900">Become a host</span>
+              <span className="text-xs text-gray-500 block max-w-[170px] leading-tight mt-0.5">
+                It's easy to start hosting and earn extra income.
+              </span>
+            </div>
+            <div className="w-10 h-10 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0 group-hover:scale-105 transition-transform">
+              🏠
+            </div>
+          </Link>
+
+          <Link 
+            href="/refer" 
+            onClick={onClose}
+            className="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 rounded-lg font-normal transition-colors cursor-pointer text-gray-700 mt-1"
+          >
+            <UserPlus size={16} className="text-gray-600" />
+            <span>Refer a host</span>
+          </Link>
+
+          <Link 
+            href="/co-host" 
+            onClick={onClose}
+            className="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 rounded-lg font-normal transition-colors cursor-pointer text-gray-700"
+          >
+            <Users size={16} className="text-gray-600" />
+            <span>Find a co-host</span>
+          </Link>
+        </div>
+
+        <hr className="my-1 border-gray-100" />
+
+        {/* Section 4: Role Switch & Auth */}
+        <div className="py-1">
+          {user?.role === "HOST" ? (
+            <button 
+              onClick={() => { loginAsGuest(); onClose(); }}
+              className="flex items-center gap-3 w-full text-left px-5 py-3 hover:bg-gray-50 font-semibold text-rose-600 transition-colors cursor-pointer"
+            >
+              <ArrowRightLeft size={16} />
+              <span>Switch to Guest account</span>
+            </button>
+          ) : (
+            <button 
+              onClick={() => { loginAsHost(); onClose(); }}
+              className="flex items-center gap-3 w-full text-left px-5 py-3 hover:bg-gray-50 font-semibold text-rose-600 transition-colors cursor-pointer"
+            >
+              <ArrowRightLeft size={16} />
+              <span>Switch to Host account</span>
+            </button>
+          )}
+
+          {user ? (
+            <button 
+              onClick={() => { logout(); onClose(); }}
+              className="flex items-center gap-3 w-full text-left px-5 py-3 hover:bg-gray-50 font-medium text-gray-700 transition-colors cursor-pointer"
+            >
+              <LogOut size={16} />
+              <span>Log out</span>
+            </button>
+          ) : (
+            <button 
+              onClick={() => setShowAuthModal(true)}
+              className="flex items-center gap-3 w-full text-left px-5 py-3 hover:bg-gray-50 font-bold text-gray-900 transition-colors cursor-pointer"
+            >
+              <LogIn size={16} className="text-rose-600" />
+              <span>Log in / Sign up</span>
+            </button>
+          )}
+        </div>
+
       </div>
 
-    </div>
+      {/* Auth Modal Trigger */}
+      <AuthModal 
+        isOpen={showAuthModal} 
+        onClose={() => {
+          setShowAuthModal(false);
+          onClose();
+        }} 
+      />
+    </>
   );
 }
