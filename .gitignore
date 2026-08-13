@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+backend/venv/
+
+# Next.js Build Output
+frontend/.next/
+frontend/out/
+
+# Python Cache & Databases
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Environment Variables & OS Files
+.env
+.env.local
+.DS_Store
+Thumbs.db
