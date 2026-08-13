@@ -60,13 +60,20 @@ export default function ListingDetail() {
   }, [id]);
 
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      if (reservationCardRef.current) {
-        const rect = reservationCardRef.current.getBoundingClientRect();
-        setShowStickyHeader(rect.bottom < 0);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          if (reservationCardRef.current) {
+            const rect = reservationCardRef.current.getBoundingClientRect();
+            setShowStickyHeader(rect.bottom < 0);
+          }
+          ticking = false;
+        });
+        ticking = true;
       }
     };
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 

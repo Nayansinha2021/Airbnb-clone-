@@ -46,14 +46,23 @@ export default function Header({
       return;
     }
 
+    let ticking = false;
     const handleScroll = () => {
-      if (window.scrollY > 30) {
-        setIsCollapsed(true);
-      } else {
-        setIsCollapsed(false);
-        setIsForceExpanded(false);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
+          if (scrollY > 60) {
+            setIsCollapsed(true);
+          } else if (scrollY < 10) {
+            setIsCollapsed(false);
+            setIsForceExpanded(false);
+          }
+          ticking = false;
+        });
+        ticking = true;
       }
     };
+
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [startCollapsed]);
