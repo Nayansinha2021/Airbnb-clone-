@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import Header from "@/components/Header";
 import Modal from "@/components/Modal";
+import RealMap from "@/components/RealMap";
 import { getListing, createBooking, getListingBookings, getListingReviews, createListingReview } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { 
@@ -462,6 +463,26 @@ export default function ListingDetail() {
         ) : (
           <p className="text-gray-500">No reviews yet for this listing.</p>
         )}
+      </section>
+
+      <hr className="border-[var(--color-border-subtle)] my-6" />
+
+      {/* Location / Map Section */}
+      <section id="location" className="max-w-7xl mx-auto px-6 xl:px-10 pb-16 w-full">
+        <h2 className="text-[22px] font-semibold mb-1">Where you'll be</h2>
+        <p className="text-sm text-gray-500 mb-6">{listing.location || "Chandigarh, India"}</p>
+        <div className="w-full h-[450px] rounded-2xl overflow-hidden border border-gray-200 shadow-sm relative">
+          <RealMap 
+            center={[listing.latitude || 30.7333, listing.longitude || 76.7794]} 
+            zoom={13} 
+            markers={[{
+              id: listing.id,
+              title: listing.title,
+              lat: listing.latitude || 30.7333,
+              lng: listing.longitude || 76.7794
+            }]} 
+          />
+        </div>
       </section>
 
       {/* Checkout Modal */}

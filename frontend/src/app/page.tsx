@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import ListingCard, { ListingProps } from "@/components/ListingCard";
+import RealMap from "@/components/RealMap";
 
 import Footer from "@/components/Footer";
 import Link from "next/link";
@@ -73,29 +74,18 @@ export default function HomePage() {
       <main className="flex-1 w-full max-w-7xl mx-auto px-6 xl:px-10 py-6">
 
         {showMap ? (
-          <div className="w-full h-[calc(100vh-220px)] bg-gray-100 rounded-2xl overflow-hidden relative shadow-inner flex items-center justify-center">
-            {/* Map Placeholder */}
-            <img 
-              src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=1600" 
-              alt="Map view" 
-              className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-luminosity"
+          <div className="w-full h-[calc(100vh-220px)] bg-gray-100 rounded-2xl overflow-hidden relative shadow-inner">
+            <RealMap 
+              center={[30.7333, 76.7794]} 
+              zoom={6} 
+              markers={listings.map((l: any) => ({
+                id: l.id,
+                title: l.title,
+                price: l.price_per_night,
+                lat: l.latitude || (30.7 + (l.id % 10) * 0.08),
+                lng: l.longitude || (76.8 + (l.id % 10) * 0.08)
+              }))} 
             />
-            {listings.map((l: any, i) => (
-              <div 
-                key={l.id} 
-                className="absolute bg-white px-3 py-1.5 rounded-full shadow-lg font-bold text-sm cursor-pointer hover:scale-110 hover:bg-black hover:text-white transition-all transform z-10"
-                style={{
-                  top: `${30 + (i * 15 % 50)}%`, 
-                  left: `${20 + (i * 20 % 60)}%`
-                }}
-              >
-                ₹{l.price_per_night}
-              </div>
-            ))}
-            <div className="relative z-20 bg-white/90 backdrop-blur px-6 py-3 rounded-xl shadow-lg font-semibold flex flex-col items-center">
-              <span>Interactive Map View</span>
-              <span className="text-sm font-normal text-gray-500">Showing {listings.length} homes</span>
-            </div>
           </div>
         ) : (
           loading ? (

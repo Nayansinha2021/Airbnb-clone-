@@ -2,6 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import RealMap from "@/components/RealMap";
 import { getMyTrips, cancelBooking, getListing } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
@@ -20,7 +22,6 @@ export default function TripsPage() {
       const data = await getMyTrips(user.id);
       setTrips(data);
 
-      // Fetch listing details for each trip
       const map: Record<number, any> = {};
       for (const t of data) {
         if (t.listing_id && !map[t.listing_id]) {
@@ -31,6 +32,8 @@ export default function TripsPage() {
         }
       }
       setListingMap(map);
+      setLoading(false);
+    } else {
       setLoading(false);
     }
   };
@@ -50,111 +53,153 @@ export default function TripsPage() {
     }
   };
 
-  if (!user) {
-    return (
-      <div className="min-h-screen flex flex-col bg-white">
-        <Header startCollapsed={true} />
-        <div className="max-w-7xl mx-auto px-6 py-16 flex-1 w-full">
-          <h1 className="text-3xl font-bold mb-6 text-gray-900">Trips</h1>
-          <hr className="mb-6 border-gray-200" />
-          <h2 className="text-xl font-semibold mb-2 text-gray-900">No trips booked...yet!</h2>
-          <p className="text-gray-600 mb-6 text-sm">Please log in to view your booked trips or start planning your next stay.</p>
-          <Link href="/" className="inline-block border border-black px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 transition text-sm">
-            Start searching
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  // Convert trips listings into map markers
+  const tripMarkers = trips.map((t) => {
+    const l = listingMap[t.listing_id];
+    return {
+      id: t.id,
+      title: l?.title || `Trip #${t.id}`,
+      price: l?.price_per_night,
+      lat: l?.latitude || 30.7333,
+      lng: l?.longitude || 76.7794
+    };
+  });
 
   return (
-    <div className="min-h-screen flex flex-col pb-20 bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-white">
       <Header startCollapsed={true} />
-      
-      <main className="max-w-7xl mx-auto px-6 xl:px-10 py-10 w-full">
-        <div className="flex justify-between items-center mb-8 border-b pb-6">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Your Booked Trips</h1>
-            <p className="text-gray-500 text-sm mt-1">Manage your upcoming and past stay reservations</p>
-          </div>
-          <Link 
-            href="/"
-            className="flex items-center gap-2 bg-black text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-gray-800 transition"
-          >
-            Explore more stays <ArrowRight size={16} />
-          </Link>
-        </div>
+
+      <main className="flex-1 w-full max-w-7xl mx-auto px-6 xl:px-10 py-8">
         
         {loading ? (
-          <div className="text-center py-16 text-gray-500">Loading your trips...</div>
+          <div className="py-20 text-center text-gray-500">Loading your trips...</div>
         ) : trips.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {trips.map((trip) => {
-              const listing = listingMap[trip.listing_id];
-              const photo = listing?.photos?.[0] || "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&q=80";
-              const title = listing?.title || `Listing #${trip.listing_id}`;
-              const location = listing?.location || "India";
+          /* Booked Trips View (Split view with Cards + RealMap) */
+          <div>
+            <div className="flex justify-between items-center mb-6 border-b pb-4">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">Trips</h1>
+                <p className="text-sm text-gray-500 mt-1">Your upcoming and past reservations</p>
+              </div>
+              <Link 
+                href="/"
+                className="bg-[#E51D53] hover:bg-rose-600 text-white font-semibold px-5 py-2.5 rounded-full text-sm transition shadow-sm"
+              >
+                Book another stay
+              </Link>
+            </div>
 
-              return (
-                <div key={trip.id} className="bg-white border border-gray-200 rounded-2xl overflow-hidden flex flex-col shadow-sm hover:shadow-md transition">
-                  <div className="relative h-48 w-full bg-gray-200 overflow-hidden">
-                    <img src={photo} alt={title} className="w-full h-full object-cover" />
-                    <span className={`absolute top-3 right-3 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-md ${trip.status === 'CONFIRMED' ? 'bg-emerald-600 text-white' : 'bg-gray-700 text-white'}`}>
-                      {trip.status}
-                    </span>
-                  </div>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              {/* Left Column: Trip Cards */}
+              <div className="lg:col-span-7 space-y-6">
+                {trips.map((trip) => {
+                  const listing = listingMap[trip.listing_id];
+                  const photo = listing?.photos?.[0] || "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&q=80";
+                  const title = listing?.title || `Listing #${trip.listing_id}`;
+                  const location = listing?.location || "India";
 
-                  <div className="p-5 flex-1 flex flex-col justify-between">
-                    <div>
-                      <h2 className="font-semibold text-lg text-gray-900 mb-1 line-clamp-1">{title}</h2>
-                      <p className="text-xs text-gray-500 flex items-center gap-1 mb-4">
-                        <MapPin size={12} /> {location}
-                      </p>
-                      
-                      <div className="space-y-2 text-xs text-gray-600 bg-gray-50 p-3 rounded-xl mb-4 border border-gray-100">
-                        <div className="flex justify-between items-center">
-                          <span className="font-semibold text-gray-700 flex items-center gap-1">
-                            <Calendar size={12} /> Dates
-                          </span>
-                          <span>
-                            {format(new Date(trip.check_in), "MMM d")} - {format(new Date(trip.check_out), "MMM d, yyyy")}
-                          </span>
+                  return (
+                    <div key={trip.id} className="bg-white border border-gray-200 rounded-2xl overflow-hidden flex flex-col sm:flex-row shadow-sm hover:shadow-md transition">
+                      <div className="sm:w-48 h-48 sm:h-auto bg-gray-200 relative flex-shrink-0">
+                        <img src={photo} alt={title} className="w-full h-full object-cover" />
+                        <span className={`absolute top-3 left-3 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider ${trip.status === 'CONFIRMED' ? 'bg-emerald-600 text-white' : 'bg-gray-700 text-white'}`}>
+                          {trip.status}
+                        </span>
+                      </div>
+
+                      <div className="p-5 flex-1 flex flex-col justify-between">
+                        <div>
+                          <h3 className="font-semibold text-base text-gray-900 mb-1 line-clamp-1">{title}</h3>
+                          <p className="text-xs text-gray-500 flex items-center gap-1 mb-3">
+                            <MapPin size={12} /> {location}
+                          </p>
+
+                          <div className="bg-gray-50 p-3 rounded-xl border border-gray-100 text-xs space-y-1.5 mb-3">
+                            <div className="flex justify-between">
+                              <span className="text-gray-500 font-medium">Check-in</span>
+                              <span className="font-semibold text-gray-900">{format(new Date(trip.check_in), "MMM d, yyyy")}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-500 font-medium">Check-out</span>
+                              <span className="font-semibold text-gray-900">{format(new Date(trip.check_out), "MMM d, yyyy")}</span>
+                            </div>
+                            <div className="flex justify-between pt-1 border-t border-gray-200">
+                              <span className="text-gray-700 font-semibold">Total Paid</span>
+                              <span className="font-bold text-sm text-gray-900">₹{trip.total_price}</span>
+                            </div>
+                          </div>
                         </div>
-                        <div className="flex justify-between items-center pt-1 border-t border-gray-200">
-                          <span className="font-semibold text-gray-700">Total Price</span>
-                          <span className="font-bold text-sm text-gray-900">₹{trip.total_price}</span>
+
+                        <div className="flex items-center justify-between pt-2 border-t border-gray-100 text-xs">
+                          <Link href={`/rooms/${trip.listing_id}`} className="font-semibold text-gray-900 underline hover:text-rose-600">
+                            View property
+                          </Link>
+                          {trip.status === "CONFIRMED" && (
+                            <button 
+                              onClick={() => handleCancelTrip(trip.id)}
+                              className="font-semibold text-rose-600 hover:text-rose-800 flex items-center gap-1"
+                            >
+                              <Trash2 size={13} /> Cancel
+                            </button>
+                          )}
                         </div>
                       </div>
                     </div>
+                  );
+                })}
+              </div>
 
-                    <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                      <Link href={`/rooms/${trip.listing_id}`} className="text-xs font-semibold text-gray-900 underline hover:text-rose-600 transition">
-                        View Property
-                      </Link>
-                      {trip.status === "CONFIRMED" && (
-                        <button 
-                          onClick={() => handleCancelTrip(trip.id)}
-                          className="text-xs font-semibold text-rose-600 hover:text-rose-800 flex items-center gap-1 transition"
-                        >
-                          <Trash2 size={13} /> Cancel Trip
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+              {/* Right Column: Real Map */}
+              <div className="lg:col-span-5 h-[550px] sticky top-24 rounded-3xl overflow-hidden border border-gray-200 shadow-sm">
+                <RealMap center={[20.5937, 78.9629]} zoom={5} markers={tripMarkers} />
+              </div>
+            </div>
           </div>
         ) : (
-          <div className="bg-white p-12 text-center rounded-2xl border border-gray-200 shadow-sm">
-            <h2 className="text-xl font-semibold mb-2 text-gray-900">No trips booked...yet!</h2>
-            <p className="text-gray-500 mb-6 text-sm">Time to dust off your bags and start planning your next adventure.</p>
-            <Link href="/" className="inline-block bg-[#FF385C] text-white px-6 py-3 rounded-lg font-semibold hover:bg-rose-600 transition text-sm shadow-sm">
-              Explore stays
-            </Link>
+          /* Empty Trips View (Matching Image 2 Airbnb Layout) */
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center py-6">
+            
+            {/* Left Column: Heading, 3D Illustration & Call to Action */}
+            <div className="lg:col-span-5 flex flex-col items-center lg:items-start text-center lg:text-left space-y-6">
+              <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">Trips</h1>
+
+              {/* 3D Isometric Travel Map Illustration */}
+              <div className="w-64 sm:w-80 aspect-square my-2 flex items-center justify-center">
+                <img 
+                  src="/travel_map_illustration.png" 
+                  alt="Map out your next trip" 
+                  className="w-full h-full object-contain hover:scale-105 transition-transform duration-300 drop-shadow-md"
+                />
+              </div>
+
+              <div>
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
+                  Map out your next trip
+                </h2>
+                <p className="text-sm text-gray-500 leading-relaxed max-w-md">
+                  After you book a trip, experience or service, come back here to see details, explore the map and save places to visit.
+                </p>
+              </div>
+
+              <Link 
+                href="/"
+                className="bg-[#E51D53] hover:bg-[#d8164b] text-white font-semibold px-8 py-3.5 rounded-xl text-base transition shadow-md inline-block"
+              >
+                Get started
+              </Link>
+            </div>
+
+            {/* Right Column: Interactive Real Map (Matching Image 2) */}
+            <div className="lg:col-span-7 h-[500px] sm:h-[580px] rounded-3xl overflow-hidden border border-gray-200 shadow-md relative">
+              <RealMap center={[20.5937, 78.9629]} zoom={3} />
+            </div>
+
           </div>
         )}
+
       </main>
+
+      <Footer />
     </div>
   );
 }
