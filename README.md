@@ -1,17 +1,23 @@
-# Airbnb Web Application Clone (Fullstack SDE Assignment)
+# 🏡 Airbnb Fullstack Web Application Clone
 
-A production-ready, full-stack clone of the Airbnb web application built with **Next.js (TypeScript)**, **FastAPI (Python)**, and **SQLite (SQLAlchemy ORM)**. It replicates Airbnb's iconic design, photo-forward user interface, explore view filtering, interactive map toggle, date availability validation, host listing CRUD, review system, and mocked checkout workflow.
+[![Next.js](https://img.shields.io/badge/Frontend-Next.js%2016-black?logo=nextdotjs)](https://nextjs.org/)
+[![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
+[![SQLite](https://img.shields.io/badge/Database-SQLite-003B57?logo=sqlite)](https://www.sqlite.org/)
+[![TypeScript](https://img.shields.io/badge/Language-TypeScript-3178C6?logo=typescript)](https://www.typescriptlang.org/)
+[![Python](https://img.shields.io/badge/Language-Python%203.10+-3776AB?logo=python)](https://www.python.org/)
+
+A production-ready, full-stack clone of the Airbnb web application built with **Next.js (TypeScript)**, **FastAPI (Python)**, and **SQLite (SQLAlchemy ORM)**. Replicates Airbnb's iconic photo-forward user interface, explore view filtering, interactive map toggle, date availability validation, host listing CRUD, review system, and mocked checkout workflow.
 
 ---
 
-## 🚀 Key Features
+## 📸 Overview & Key Features
 
 ### 1. Home & Search (Explore View)
-- **Grid Layout**: Responsive property cards featuring image carousels, guest favorite badges, location, price per night, and rating.
-- **Search Bar**: Interactive Location, Date Range, and Guest count picker with live client filtering.
+- **Grid Layout**: Property cards featuring image carousels, guest favorite badges, location, price per night, and rating.
+- **Search Bar**: Interactive Location, Date Range, and Guest count picker with live filtering.
 - **Category Filter Bar**: Filter by property categories (*Amazing pools, Beachfront, Cabins, OMG!, Lakefront, Design, Castles, Farms*).
-- **Map View Toggle**: Floating button switching between grid view and an interactive map interface with price markers.
-- **Wishlist & Favorites**: Persistent heart toggle saved to browser `localStorage`.
+- **Map View Toggle**: Floating toggle between grid view and an interactive map interface with price markers.
+- **Wishlist & Favorites**: Heart toggle with state saved in browser `localStorage`.
 
 ### 2. Listing Detail Page
 - **Photo Gallery**: High-resolution image grid displaying primary photos and gallery previews.
@@ -27,7 +33,7 @@ A production-ready, full-stack clone of the Airbnb web application built with **
 
 ### 4. Host Experience (Full CRUD & Dashboard)
 - **Host Dashboard (`/hosting`)**: Tabbed interface for managing host properties and viewing guest reservations.
-- **Create Listing Modal**: Full form to publish new listings with title, description, price, max guests, category, property type, location, and photos.
+- **Create Listing Modal**: Publish new listings with title, description, price, max guests, category, property type, location, and photos.
 - **Edit Listing Modal**: Modify existing property attributes.
 - **Delete Listing**: Instant removal with confirmation dialog.
 - **Guest Reservations Tab**: Monitor incoming guest bookings and total revenue earned across host properties.
@@ -177,6 +183,23 @@ npm install
 npm run dev
 ```
 *Frontend web app will run at `http://localhost:3000`.*
+
+---
+
+## 🐙 Deployment to GitHub & Cloud Services
+
+### 1. Push to GitHub
+```bash
+# 1. Create a repository on GitHub (e.g. named 'airbnb-clone')
+# 2. Add remote URL and push:
+git remote add origin https://github.com/<your-username>/airbnb-clone.git
+git branch -M main
+git push -u origin main
+```
+
+### 2. Cloud Deployment
+- **Frontend (Vercel)**: Import `frontend/` on [Vercel](https://vercel.com). Framework preset: Next.js. Build command: `npm run build`.
+- **Backend (Render / Railway)**: Deploy `backend/` on [Render](https://render.com). Build command: `pip install -r requirements.txt && python seed.py`, Start command: `uvicorn main:app --host 0.0.0.0 --port $PORT`.
 
 ---
 
